@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Build all platforms
+        run: |
+          mkdir -p dist
+          # Windows
+          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_windows_amd64.exe ./cmd/tg-ws-proxy
+          GOOS=windows GOARCH=arm64 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_windows_arm64.exe ./cmd/tg-ws-proxy
+          # Linux
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_linux_amd64 ./cmd/tg-ws-proxy
+          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_linux_arm64 ./cmd/tg-ws-proxy
+          GOOS=linux GOARCH=arm GOARM=7 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_linux_armv7 ./cmd/tg-ws-proxy
+          # macOS
+          GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_darwin_amd64 ./cmd/tg-ws-proxy
+          GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_darwin_arm64 ./cmd/tg-ws-proxy
+          # Keenetic
+          GOOS=linux GOARCH=mipsle GOMIPS=softfloat go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_keenetic_mipsel ./cmd/tg-ws-proxy
+          GOOS=linux GOARCH=mips GOMIPS=softfloat go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_keenetic_mips ./cmd/tg-ws-proxy
+          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o dist/tg-ws-proxy_keenetic_aarch64 ./cmd/tg-ws-proxy
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+          files: dist/*
