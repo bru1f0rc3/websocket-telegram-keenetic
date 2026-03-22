@@ -1,0 +1,12 @@
+{
+  "host": "0.0.0.0",
+  "port": 1080,
+  "dc_ip": [
+    "2:149.154.167.220",
+    "4:149.154.167.220"
+  ],
+  "verbose": false,
+  "pool_size": 2,
+  "buf_kb": 128,
+  "log_file": "/opt/var/log/tg-ws-proxy.log"
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Telegram WebSocket Proxy
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/tg-ws-proxy --config /etc/tg-ws-proxy/config.json
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

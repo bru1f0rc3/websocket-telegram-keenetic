@@ -1,0 +1,14 @@
+#!/bin/sh
+### Entware init.d script for tg-ws-proxy
+### Place in /opt/etc/init.d/S99tgwsproxy
+
+ENABLED=yes
+PROCS=tg-ws-proxy
+ARGS="--config /opt/etc/tg-ws-proxy/config.json"
+PREARGS=""
+DESC="Telegram WebSocket Proxy"
+PATH=/opt/sbin:/opt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Install binary to /opt/bin/tg-ws-proxy
+
+. /opt/etc/init.d/rc.func
